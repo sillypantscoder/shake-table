@@ -1,15 +1,13 @@
-import time
 import serial
-import typing
 import sys
 
 crc = 0
 def crc_clear():
 	global crc
-def crc_update(data):
+def crc_update(data: int):
 	global crc
 	crc = crc ^ (data << 8)
-	for bit in range(0, 8):
+	for _bit in range(0, 8):
 		if (crc&0x8000)  == 0x8000:
 			crc = ((crc << 1) ^ 0x1021)
 		else:
@@ -19,7 +17,7 @@ def crc_update(data):
 # Set up serial connection with the Roboclaw controller
 ser = serial.Serial('/dev/ttyS0', 38400, timeout=5)
 
-def writebyte(val):
+def writebyte(val: int):
 	crc_update(val)
 	ser.write(bytes([val]))
 def readbyte():

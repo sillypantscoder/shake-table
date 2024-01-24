@@ -10,20 +10,14 @@ import time
 hostName = "0.0.0.0"
 serverPort = 8080
 
-def read_file(filename):
-	f = open(filename, "r")
-	t = f.read()
-	f.close()
-	return t
-
-def bin_read_file(filename):
+def read_file(filename: str) -> bytes:
 	f = open(filename, "rb")
 	t = f.read()
 	f.close()
 	return t
 
-def write_file(filename, content):
-	f = open(filename, "w")
+def write_file(filename: str, content: bytes):
+	f = open(filename, "wb")
 	f.write(content)
 	f.close()
 
@@ -132,14 +126,14 @@ def get(path: str) -> HttpResponse:
 		}
 	elif path.startswith("/set/run/"):
 		setname = path[9:-1]
-		contents = read_file("datas/" + setname + ".json")
+		contents = read_file("datas/" + setname + ".json").decode("UTF-8")
 		start_running_file(contents)
 		return {
 			"status": 200,
 			"headers": {
 				"Content-Type": "image/svg+xml"
 			},
-			"content": read_file("client/watch.xml").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents)
+			"content": read_file("client/watch.xml").decode("UTF-8").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents)
 		}
 	elif path.startswith("/set/"):
 		setname = path[5:-1]
@@ -149,7 +143,7 @@ def get(path: str) -> HttpResponse:
 			"headers": {
 				"Content-Type": "image/svg+xml"
 			},
-			"content": read_file("client/view.xml").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents)
+			"content": read_file("client/view.xml").decode("UTF-8").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents.decode("UTF-8"))
 		}
 	elif path == "/data/ls":
 		return {
@@ -222,7 +216,7 @@ class MyServer(BaseHTTPRequestHandler):
 		c = res["content"]
 		if isinstance(c, str): c = c.encode("utf-8")
 		self.wfile.write(c)
-	def log_message(self, format: str, *args) -> None:
+	def log_message(self, format: str, *args: typing.Any) -> None:
 		return;
 		if 400 <= int(args[1]) < 500:
 			# Errored request!
