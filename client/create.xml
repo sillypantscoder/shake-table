@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<style>
+text {
+	font-family: sans-serif;
+	user-select: none;
+	font-size: 2px;
+}
+.button rect {
+	fill: black;
+	rx: 0.5px;
+}
+.button text {
+	fill: white;
+	transform: translateY(1.75px);
+}
+.button:hover rect {
+	fill: white;
+	stroke: black;
+	stroke-width: 0.1px;
+}
+.button:hover text {
+	fill: black;
+}
+	</style>
+	<rect x="0" y="0" width="20" height="20" fill="white" />
+	<g>
+		<rect x="0" y="0" width="20" height="2" fill="black" />
+		<path d="M 1 0.2 L 1.6 0.9 L 1.6 1.8 L 0.4 1.8 L 0.4 0.9 Z" fill="black" stroke-width="0.2" stroke="white" onclick="location.replace('.')" />
+		<text x="2" y="2" fill="white">Create File</text>
+	</g>
+	<g>
+		<text x="0.5" y="5" fill="black"><tspan>X motion: </tspan><tspan id="sliderXmotionresult"></tspan></text>
+		<g class="slider" style="transform: translateY(5.25px);">
+			<rect x="0" y="0" width="20" height="2" fill="white" />
+			<rect x="0.5" y="0.75" width="19" height="0.5" rx="0.25" fill="white" stroke-width="0.1" stroke="black" />
+			<circle cy="1" r="1" fill="black" />
+		</g>
+	</g>
+	<g>
+		<text x="0.5" y="9.5" fill="black"><tspan>Y motion: </tspan><tspan id="sliderYmotionresult"></tspan></text>
+		<g class="slider" style="transform: translateY(9.75px);">
+			<rect x="0" y="0" width="20" height="2" fill="white" />
+			<rect x="0.5" y="0.75" width="19" height="0.5" rx="0.25" fill="white" stroke-width="0.1" stroke="black" />
+			<circle cy="1" r="1" fill="black" />
+		</g>
+	</g>
+	<g>
+		<text x="0.5" y="13" fill="black"><tspan>Time (seconds): </tspan><tspan id="sliderTimeresult"></tspan></text>
+		<g class="slider slider-time" style="transform: translateY(13.25px);">
+			<rect x="0" y="0" width="20" height="2" fill="white" />
+			<rect x="0.5" y="0.75" width="19" height="0.5" rx="0.25" fill="white" stroke-width="0.1" stroke="black" />
+			<circle cy="1" r="1" fill="black" />
+		</g>
+	</g>
+	<g class="button" onclick="submit()">
+		<rect x="1" y="17" width="18" height="2" />
+		<text x="2" y="17">Create!</text>
+	</g>
+	<script><![CDATA[
+function sliderUpdatePos(e) {
+	var val = Number(e.dataset.amount)
+	var x = (val * 19) + 0.5
+	e.children[2].setAttribute("cx", x)
+	e.previousElementSibling.children[1].innerHTML = val
+	if (e.classList.contains("slider-time")) e.previousElementSibling.children[1].innerHTML = Math.round(val * 100) / 10
+}
+function sliderHandler(e) {
+	if (e.buttons != 1) return
+	var box = e.currentTarget.children[1].getBoundingClientRect()
+	var mouseX = (e.clientX - box.left) / box.width
+	var amount = Math.round(mouseX * 100) / 100
+	if (amount < 0) amount = 0
+	if (amount > 1) amount = 1
+	e.currentTarget.dataset.amount = amount
+	sliderUpdatePos(e.currentTarget)
+}
+function submit() {
+	var xMotion = Number(document.querySelector("#sliderXmotionresult").innerHTML)
+	var yMotion = Number(document.querySelector("#sliderYmotionresult").innerHTML)
+	var time = Number(document.querySelector("#sliderTimeresult").innerHTML)
+	var filename = prompt("Enter the file name for this file:")
+	var x = new XMLHttpRequest()
+	x.open("POST", "/create")
+	x.addEventListener("loadend", (e) => location.replace("/set/"+filename+"/"))
+	x.send(JSON.stringify({
+		filename,
+		time,
+		xMotion,
+		yMotion
+	}))
+}
+(() => {
+	var elms = [...document.querySelectorAll(".slider")]
+	for (var i = 0; i < elms.length; i++) {
+		elms[i].dataset.amount = "0.5"
+		sliderUpdatePos(elms[i])
+		elms[i].addEventListener("mousemove", sliderHandler)
+		elms[i].addEventListener("mousedown", sliderHandler)
+	}
+})();
+	]]></script>
+</svg>

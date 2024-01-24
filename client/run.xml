@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<style>
+text {
+	font-family: sans-serif;
+	user-select: none;
+}
+.button rect {
+	fill: black;
+	rx: 0.5px;
+}
+.button text {
+	fill: white;
+	font-size: 2px;
+	transform: translateY(1.75px);
+}
+.button:hover rect {
+	fill: white;
+	stroke: black;
+	stroke-width: 0.1px;
+}
+.button:hover text {
+	fill: black;
+}
+	</style>
+	<rect x="0" y="0" width="20" height="20" fill="white" />
+	<g>
+		<rect x="0" y="0" width="20" height="2" fill="black" />
+		<path d="M 1 0.2 L 1.6 0.9 L 1.6 1.8 L 0.4 1.8 L 0.4 0.9 Z" fill="black" stroke-width="0.2" stroke="white" onclick="location.replace('.')" />
+		<text x="2" y="2" font-size="2" fill="white">Select File</text>
+	</g>
+	<script><![CDATA[
+var ns = "http://www.w3.org/2000/svg";
+(() => {
+	var x = new XMLHttpRequest()
+	x.open("GET", "/data/ls")
+	x.addEventListener("loadend", (e) => {
+		var data = e.target.responseText.split("\n")
+		for (var i = 0; i < data.length; i++) {
+			var e = document.createElementNS(ns, "g")
+			e.classList.add("button")
+			e.innerHTML = `<rect x="1" y="${(i + 1) * 3}" width="18" height="2" /><text x="2" y="${(i + 1) * 3}">${data[i]}</text>`
+			document.rootElement.appendChild(e)
+			e.setAttribute("onclick", `location.replace("/set/${data[i]}/")`)
+		}
+	})
+	x.send()
+})();
+	]]></script>
+</svg>

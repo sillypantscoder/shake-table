@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<style>
+text {
+	font-family: sans-serif;
+	user-select: none;
+	font-size: 2px;
+}
+.button rect {
+	fill: black;
+	rx: 0.5px;
+}
+.button text {
+	fill: white;
+	transform: translateY(1.75px);
+}
+.button:hover rect {
+	fill: white;
+	stroke: black;
+	stroke-width: 0.1px;
+}
+.button:hover text {
+	fill: black;
+}
+	</style>
+	<rect x="0" y="0" width="20" height="20" fill="white" />
+	<g>
+		<rect x="0" y="0" width="20" height="2" fill="black" />
+		<path d="M 1 0.2 L 1.6 0.9 L 1.6 1.8 L 0.4 1.8 L 0.4 0.9 Z" fill="black" stroke-width="0.2" stroke="white" onclick="location.replace('.')" />
+		<text x="2" y="2" fill="white">Motor Control</text>
+	</g>
+	<g id="canvas">
+		<rect x="2" y="3" width="15" height="15" fill="white" stroke="black" stroke-width="0.1" onclick="clicked(event)" />
+	</g>
+	<script><![CDATA[
+var ns = "http://www.w3.org/2000/svg";
+function clicked(event) {
+	var box = event.currentTarget.getBoundingClientRect()
+	var x = (event.clientX - box.left) / box.width
+	var y = (event.clientY - box.top) / box.height
+	setloc(x, y)
+}
+var loc = null
+function setloc(x, y) {
+	if (loc == null) {
+		loc = [document.createElementNS(ns, "circle"), x, y]
+		loc[0].setAttribute("cx", (x * 15) + 2)
+		loc[0].setAttribute("cy", (y * 15) + 3)
+		loc[0].setAttribute("r", "0.3")
+		loc[0].setAttribute("fill", "black")
+		document.querySelector("#canvas").appendChild(loc[0])
+	} else {
+		diff = [
+			x - loc[1],
+			y - loc[2]
+		]
+		loc[1] = x
+		loc[2] = y
+		loc[0].setAttribute("cx", (x * 15) + 2)
+		loc[0].setAttribute("cy", (y * 15) + 3)
+		var x = new XMLHttpRequest()
+		x.open("POST", "/move_motor")
+		x.send(diff.join("\n"))
+	}
+}
+	]]></script>
+</svg>
