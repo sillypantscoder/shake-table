@@ -1,3 +1,11 @@
+"""
+Starts an HTTP server letting you move the motors in various ways.
+
+To see the client source pages, look at the "client" folder.
+
+The actual server content is handled in the "get" and "post" functions.
+"""
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import typing
 import json
