@@ -31,7 +31,7 @@ text {
 	<g>
 		<rect x="5" y="3" width="10" height="10" fill="white" stroke="black" stroke-width="0.1"/>
 		<path fill="none" stroke="#888" stroke-width="0.1" id="all_preview" />
-		<path fill="none" stroke="black" stroke-width="0.1" id="section_preview" />
+		<path fill="none" stroke="black" stroke-width="0.2" id="section_preview" />
 	</g>
 	<g>
 		<g class="slider slider-time" style="transform: translateY(13.25px);" onmousedown="sliderHandler(event)" onmousemove="sliderHandler(event)">
@@ -94,7 +94,7 @@ function getCircleLocationForTime(amount) {
 	}
 	var infoPrev = FILE_INFO[previousIndex]
 	var infoNext = FILE_INFO[nextIndex]
-	console.log(infoPrev, infoNext)
+	// console.log(infoPrev, infoNext)
 	if (infoPrev == undefined) infoPrev = [0, 0, 0]
 	if (infoNext == undefined) infoNext = [totalTimeS, 0, 0]
 	return [

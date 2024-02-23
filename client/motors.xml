@@ -39,7 +39,20 @@ function clicked(event) {
 	var y = (event.clientY - box.top) / box.height
 	setloc(x, y)
 }
-var loc = null
+var xy = {{MOTORLOC}}
+var loc = null;
+(() => {
+	if (xy != null) {
+		var x = xy[0]
+		var y = xy[1]
+		loc = [document.createElementNS(ns, "circle"), x, y]
+		loc[0].setAttribute("cx", (x * 15) + 2)
+		loc[0].setAttribute("cy", (y * 15) + 3)
+		loc[0].setAttribute("r", "0.3")
+		loc[0].setAttribute("fill", "black")
+		document.querySelector("#canvas").appendChild(loc[0])
+	}
+})();
 function setloc(x, y) {
 	if (loc == null) {
 		loc = [document.createElementNS(ns, "circle"), x, y]
@@ -48,6 +61,9 @@ function setloc(x, y) {
 		loc[0].setAttribute("r", "0.3")
 		loc[0].setAttribute("fill", "black")
 		document.querySelector("#canvas").appendChild(loc[0])
+		var h = new XMLHttpRequest()
+		h.open("POST", "/guess/pos")
+		h.send(JSON.stringify([x, y]))
 	} else {
 		diff = [
 			x - loc[1],
@@ -57,9 +73,9 @@ function setloc(x, y) {
 		loc[2] = y
 		loc[0].setAttribute("cx", (x * 15) + 2)
 		loc[0].setAttribute("cy", (y * 15) + 3)
-		var x = new XMLHttpRequest()
-		x.open("POST", "/move_motor")
-		x.send(diff.join("\n"))
+		var h = new XMLHttpRequest()
+		h.open("POST", "/move_motor")
+		h.send(diff.join("\n"))
 	}
 }
 	]]></script>

@@ -26,6 +26,9 @@ class HttpResponse(typing.TypedDict):
 	headers: dict[str, str]
 	content: "str | bytes"
 
+motor_pos: "None | tuple[float, float]" = None
+track_size: "None | tuple[float, float]" = None
+
 def generate_file(filename: str, time: float, xMotion: float, yMotion: float):
 	points: list[tuple[float, float, float]] = []
 	for i in range(round(time * 2)):
@@ -37,8 +40,12 @@ def generate_file(filename: str, time: float, xMotion: float, yMotion: float):
 	f = open("datas/" + filename + ".json", "w")
 	f.write(json.dumps(points))
 	f.close()
+	# f = open("out.txt", "w")
+	# f.write("[" + ", ".join([f"({x[1]}, {x[2]})" for x in points]) + "]")
+	# f.close()
+# generate_file("zzz", 30, 5, 5)
 
-def set_motor_pos(xDiff: float, yDiff: float, duration: float):
+def set_motor_rel_pos(xDiff: float, yDiff: float, duration: float):
 	speeds = [
 		round(xDiff * (1 / duration) * -400),
 		round(yDiff * (1 / duration) * -400)
@@ -53,28 +60,24 @@ def set_motor_pos(xDiff: float, yDiff: float, duration: float):
 	subprocess.run(["python3", "newshaketable4.py", "10"])
 	subprocess.run(["python3", "newshaketable4.py", "20"])
 
+def set_motor_pos(x: float, y: float, duration: float):
+	assert motor_pos != None
+	diff = [
+		x - motor_pos[0],
+		y - motor_pos[1]
+	]
+	set_motor_rel_pos(diff[0], diff[1], duration)
+
 def run_file(data: list[tuple[float, float, float]]):
 	print(f"[0/{len(data)}]")
-	for i in range(len(data) - 1):
+	for i in range(len(data)):
 		timeStart = data[i][0]
 		timeEnd = data[i + 1][0]
-		posStart = [
-			data[i][1],
-			data[i][2]
-		]
-		posEnd = [
-			data[i + 1][1],
-			data[i + 1][2]
-		]
 		timeDiff = timeEnd - timeStart
-		posDiff = [
-			posEnd[0] - posStart[0],
-			posEnd[1] - posStart[1]
-		]
 		# decrease: list[float] = [*posDiff]
 		# if posDiff[0] >= 256: decrease[0] += posDiff[0] - 255
 		# if posDiff[1] >= 256: decrease[1] += posDiff[1] - 255
-		set_motor_pos(posDiff[0] / 2, posDiff[1] / 2, timeDiff)
+		set_motor_pos(data[i][1] / 2, data[i][2] / 2, timeDiff)
 		print(f"[{i + 1}/{len(data)}]")
 
 def start_running_file(data: str):
@@ -106,7 +109,7 @@ def get(path: str) -> HttpResponse:
 			"headers": {
 				"Content-Type": "image/svg+xml"
 			},
-			"content": read_file("client/motors.xml")
+			"content": read_file("client/motors.xml").replace(b"{{MOTORLOC}}", b"null" if motor_pos == None else f"[{motor_pos[0]}, {motor_pos[1]}]".encode("UTF-8"))
 		}
 	elif path == "/create":
 		return {
@@ -163,16 +166,18 @@ def get(path: str) -> HttpResponse:
 		}
 
 def post(path: str, body: bytes) -> HttpResponse:
-	if path == "/motors":
-		subprocess.run(["python3", "newshaketable4.py", body])
+	global motor_pos
+	if path == "/create":
+		info = json.loads(body.decode("UTF-8"))
+		generate_file(info["filename"], info["time"], info["xMotion"], info["yMotion"])
 		return {
 			"status": 200,
 			"headers": {},
 			"content": f""
 		}
-	elif path == "/create":
+	elif path == "/guess/pos":
 		info = json.loads(body.decode("UTF-8"))
-		generate_file(info["filename"], info["time"], info["xMotion"], info["yMotion"])
+		motor_pos = [info[0], info[1]] # type: ignore
 		return {
 			"status": 200,
 			"headers": {},
@@ -181,7 +186,7 @@ def post(path: str, body: bytes) -> HttpResponse:
 	elif path == "/move_motor":
 		info = [float(x) for x in body.decode("UTF-8").split("\n")]
 		dist = math.dist(info, (0, 0))
-		threading.Thread(target=set_motor_pos, args=(*info, dist * 7)).start()
+		threading.Thread(target=set_motor_rel_pos, args=(*info, dist * 7)).start()
 		return {
 			"status": 200,
 			"headers": {},
