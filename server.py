@@ -62,11 +62,11 @@ def set_motor_rel_pos(xDiff: float, yDiff: float, duration: float):
 	if speeds[1] >= 255: speeds[1] = 255
 	if speeds[0] <= -255: speeds[0] = -255
 	if speeds[1] <= -255: speeds[1] = -255
-	subprocess.run(["python3", "newshaketable4.py", f"1{speeds[1]}"])
-	subprocess.run(["python3", "newshaketable4.py", f"2{speeds[0]}"])
+	subprocess.run(["python3", "sendcmd.py", f"1{speeds[1]}"])
+	subprocess.run(["python3", "sendcmd.py", f"2{speeds[0]}"])
 	time.sleep(duration)
-	subprocess.run(["python3", "newshaketable4.py", "10"])
-	subprocess.run(["python3", "newshaketable4.py", "20"])
+	subprocess.run(["python3", "sendcmd.py", "10"])
+	subprocess.run(["python3", "sendcmd.py", "20"])
 
 def set_motor_pos(x: float, y: float, duration: float):
 	assert motor_pos != None

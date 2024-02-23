@@ -6,4 +6,4 @@ import subprocess
 
 while True:
 	m = input()
-	subprocess.run(["python3", "newshaketable4.py", m])
+	subprocess.run(["python3", "sendcmd.py", m])
