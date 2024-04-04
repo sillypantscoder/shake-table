@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<!-- This is a basic program that lets you move the motors around. It will get the current motor position from the server, then send signals to move the motor whenever you click in a new position. -->
 	<style>
 text {
 	font-family: sans-serif;
@@ -37,7 +38,7 @@ function clicked(event) {
 	var box = event.currentTarget.getBoundingClientRect()
 	var x = (event.clientX - box.left) / box.width
 	var y = (event.clientY - box.top) / box.height
-	setloc(x, y)
+	setloc((2 * x) - 1, (2 * y) - 1)
 }
 var xy = {{MOTORLOC}}
 var loc = null;
@@ -46,8 +47,8 @@ var loc = null;
 		var x = xy[0]
 		var y = xy[1]
 		loc = [document.createElementNS(ns, "circle"), x, y]
-		loc[0].setAttribute("cx", (x * 15) + 2)
-		loc[0].setAttribute("cy", (y * 15) + 3)
+		loc[0].setAttribute("cx", (x * 7.5) + 9.5)
+		loc[0].setAttribute("cy", (y * 7.5) + 10.5)
 		loc[0].setAttribute("r", "0.3")
 		loc[0].setAttribute("fill", "black")
 		document.querySelector("#canvas").appendChild(loc[0])
@@ -56,8 +57,8 @@ var loc = null;
 function setloc(x, y) {
 	if (loc == null) {
 		loc = [document.createElementNS(ns, "circle"), x, y]
-		loc[0].setAttribute("cx", (x * 15) + 2)
-		loc[0].setAttribute("cy", (y * 15) + 3)
+		loc[0].setAttribute("cx", (x * 7.5) + 9.5)
+		loc[0].setAttribute("cy", (y * 7.5) + 10.5)
 		loc[0].setAttribute("r", "0.3")
 		loc[0].setAttribute("fill", "black")
 		document.querySelector("#canvas").appendChild(loc[0])
@@ -65,17 +66,13 @@ function setloc(x, y) {
 		h.open("POST", "/guess/pos")
 		h.send(JSON.stringify([x, y]))
 	} else {
-		diff = [
-			x - loc[1],
-			y - loc[2]
-		]
 		loc[1] = x
 		loc[2] = y
-		loc[0].setAttribute("cx", (x * 15) + 2)
-		loc[0].setAttribute("cy", (y * 15) + 3)
+		loc[0].setAttribute("cx", (x * 7.5) + 9.5)
+		loc[0].setAttribute("cy", (y * 7.5) + 10.5)
 		var h = new XMLHttpRequest()
 		h.open("POST", "/move_motor")
-		h.send(diff.join("\n"))
+		h.send([x, y].join("\n"))
 	}
 }
 	]]></script>

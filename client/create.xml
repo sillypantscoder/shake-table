@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<!--
+		This file lets you create a file using a simple sine wave function.
+		I hope you appreciate my sliders, because they are amazing.
+	-->
 	<style>
 text {
 	font-family: sans-serif;

@@ -34,10 +34,11 @@ class HttpResponse(typing.TypedDict):
 	headers: dict[str, str]
 	content: "str | bytes"
 
+# Keep track of the motor position.
 motor_pos: "None | tuple[float, float]" = None
-track_size: "None | tuple[float, float]" = None
 
 def generate_file(filename: str, time: float, xMotion: float, yMotion: float):
+	"""Generate a file using a simple sine wave function. Accessed from the 'create.xml' file."""
 	points: list[tuple[float, float, float]] = []
 	for i in range(round(time * 2)):
 		x = xMotion * math.sin(i)
@@ -48,15 +49,12 @@ def generate_file(filename: str, time: float, xMotion: float, yMotion: float):
 	f = open("datas/" + filename + ".json", "w")
 	f.write(json.dumps(points))
 	f.close()
-	# f = open("out.txt", "w")
-	# f.write("[" + ", ".join([f"({x[1]}, {x[2]})" for x in points]) + "]")
-	# f.close()
-# generate_file("zzz", 30, 5, 5)
 
 def set_motor_rel_pos(xDiff: float, yDiff: float, duration: float):
+	"""Moves the motor by a specific amount. xDiff and yDiff should be from -0.5 to 0.5, and duration is in seconds."""
 	speeds = [
-		round(xDiff * (1 / duration) * -400),
-		round(yDiff * (1 / duration) * -400)
+		round(xDiff * (1 / duration) * -300),
+		round(yDiff * (1 / duration) * -300)
 	]
 	if speeds[0] >= 255: speeds[0] = 255
 	if speeds[1] >= 255: speeds[1] = 255
@@ -69,26 +67,34 @@ def set_motor_rel_pos(xDiff: float, yDiff: float, duration: float):
 	subprocess.run(["python3", "sendcmd.py", "20"])
 
 def set_motor_pos(x: float, y: float, duration: float):
+	"""Uses the `motor_pos` variable to move the motor to an absolute location. x and y are from -0.5 to 0.5, and duration is in seconds."""
+	global motor_pos
 	assert motor_pos != None
 	diff = [
 		x - motor_pos[0],
 		y - motor_pos[1]
 	]
+	motor_pos = (x, y)
 	set_motor_rel_pos(diff[0], diff[1], duration)
 
 def run_file(data: list[tuple[float, float, float]]):
+	"""Runs a file by moving to all the points in order."""
 	print(f"[0/{len(data)}]")
+	set_motor_pos(data[0][1], data[0][2], 1)
+	print(f"[1/{len(data)}]")
 	for i in range(len(data)):
-		timeStart = data[i][0]
-		timeEnd = data[i + 1][0]
+		if i == 0: continue
+		timeStart = data[i - 1][0]
+		timeEnd = data[i][0]
 		timeDiff = timeEnd - timeStart
 		# decrease: list[float] = [*posDiff]
 		# if posDiff[0] >= 256: decrease[0] += posDiff[0] - 255
 		# if posDiff[1] >= 256: decrease[1] += posDiff[1] - 255
-		set_motor_pos(data[i][1] / 2, data[i][2] / 2, timeDiff)
+		set_motor_pos(data[i - 1][1], data[i - 1][2], timeDiff)
 		print(f"[{i + 1}/{len(data)}]")
 
 def start_running_file(data: str):
+	"""Starts a thread that runs a specified file. Allows the server to continue handling other requests after this one has finished."""
 	t: list[tuple[float, float, float]] = json.loads(data)
 	# t = [
 	# 	(i / 10, round(math.sin(0.5 * math.pi * i) * 0.01, 2), 0)
@@ -103,6 +109,7 @@ def start_running_file(data: str):
 	threading.Thread(target=run_file, args=(t,)).start()
 
 def get(path: str) -> HttpResponse:
+	"""Return the results of a GET request."""
 	if path == "/":
 		return {
 			"status": 200,
@@ -174,6 +181,7 @@ def get(path: str) -> HttpResponse:
 		}
 
 def post(path: str, body: bytes) -> HttpResponse:
+	"""Return the results of a POST request."""
 	global motor_pos
 	if path == "/create":
 		info = json.loads(body.decode("UTF-8"))
@@ -192,9 +200,14 @@ def post(path: str, body: bytes) -> HttpResponse:
 			"content": f""
 		}
 	elif path == "/move_motor":
+		if motor_pos == None: return {
+			"status": 400,
+			"headers": {},
+			"content": "Please define the motor position first"
+		}
 		info = [float(x) for x in body.decode("UTF-8").split("\n")]
-		dist = math.dist(info, (0, 0))
-		threading.Thread(target=set_motor_rel_pos, args=(*info, dist * 7)).start()
+		dist = math.dist(info, [*motor_pos])
+		threading.Thread(target=set_motor_pos, args=(*info, dist * 7)).start()
 		return {
 			"status": 200,
 			"headers": {},
@@ -210,6 +223,7 @@ def post(path: str, body: bytes) -> HttpResponse:
 		}
 
 class MyServer(BaseHTTPRequestHandler):
+	"""A crazy thing that handles HTTP requests that I generally don't mess with"""
 	def do_GET(self):
 		global running
 		res = get(self.path)
@@ -239,6 +253,7 @@ class MyServer(BaseHTTPRequestHandler):
 		# don't output requests
 
 if __name__ == "__main__":
+	# Run the server!
 	running = True
 	webServer = HTTPServer((hostName, serverPort), MyServer)
 	webServer.timeout = 1

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<!-- This is the home page, which just contains links to the other pages. -->
 	<style>
 text {
 	font-family: sans-serif;
