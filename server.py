@@ -90,7 +90,7 @@ def run_file(data: list[tuple[float, float, float]]):
 		# decrease: list[float] = [*posDiff]
 		# if posDiff[0] >= 256: decrease[0] += posDiff[0] - 255
 		# if posDiff[1] >= 256: decrease[1] += posDiff[1] - 255
-		set_motor_pos(data[i - 1][1], data[i - 1][2], timeDiff)
+		set_motor_pos(data[i - 1][1], data[i - 1][2], timeDiff * 2)
 		print(f"[{i + 1}/{len(data)}]")
 
 def start_running_file(data: str):
@@ -194,6 +194,13 @@ def post(path: str, body: bytes) -> HttpResponse:
 	elif path == "/guess/pos":
 		info = json.loads(body.decode("UTF-8"))
 		motor_pos = [info[0], info[1]] # type: ignore
+		return {
+			"status": 200,
+			"headers": {},
+			"content": f""
+		}
+	elif path == "/guess/remove":
+		motor_pos = None
 		return {
 			"status": 200,
 			"headers": {},
