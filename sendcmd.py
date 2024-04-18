@@ -3,6 +3,8 @@ Send a single command to the motors.
 It is necessary (for some reason) to spawn a new process each time. Hopefully this will be fixed in the future?
 
 There should be a command line argument, where the first character is a '1' or a '2' and indicates which motor to move, and the rest of the argument is the speed to move the motor at. (Negative speeds are interpreted as moving backwards.) For example, the argument might be '132' to move motor 1 at speed 32, or '2-64' to move motor 2 backwards at speed 64.
+
+This was reverse-engineered from the miserably broken Roboclaw Python module.
 """
 
 import serial

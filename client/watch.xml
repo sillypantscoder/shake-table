@@ -46,10 +46,10 @@ var FILENAME = `{{FILENAME}}`;
 var FILE_INFO = JSON.parse(`{{FILEINFO}}`);
 
 var tickStart = Date.now()
-var extraTimeSPerLocation = 0.55
-var totalTimeS = Math.max(...FILE_INFO.map((v) => v[0])) + (extraTimeSPerLocation * FILE_INFO.length)
+var extraTimeSPerLocation = 0.7
+var totalTimeS = 2 + Math.max(...FILE_INFO.map((v) => v[0])) + (extraTimeSPerLocation * FILE_INFO.length)
 var timeEnd = tickStart + (totalTimeS * 1000)
-var locationTimes = {pos:-1,timeTarget:Date.now()}
+var locationTimes = { pos: -1, timeTarget: Date.now() }
 
 function updateProgressBar() {
 	var timeDiffMS = Date.now() - tickStart

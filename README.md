@@ -26,7 +26,9 @@ If you're a random person who wants to know how to use this thing, here are some
   - If you push it, the motor will go in a circle.
   - While the motor is running, a wildly inaccurate preview of what's going on will appear on your screen.
   - Once it's done, be sure to check the "Motor Control" screen to make sure the motor position is correct.
-  - Warning: If you push the run button a whole bunch of times in a row, you might have some problems.
+    - If it's not correct, press the "Reset Position" button to correct the position.
+    - For more information about this, go read the "Motor Control" section below.
+  - Warning: If you push the run button a whole bunch of times in a row (without correcting the position), you might have some problems.
   - Warning: Even if you don't do that, you might have problems anyways.
   - If the motor doesn't work, make sure:
     - The motor controller is connected.

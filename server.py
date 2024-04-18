@@ -90,7 +90,7 @@ def run_file(data: list[tuple[float, float, float]]):
 		# decrease: list[float] = [*posDiff]
 		# if posDiff[0] >= 256: decrease[0] += posDiff[0] - 255
 		# if posDiff[1] >= 256: decrease[1] += posDiff[1] - 255
-		set_motor_pos(data[i - 1][1], data[i - 1][2], timeDiff * 2)
+		set_motor_pos(data[i - 1][1], data[i - 1][2], timeDiff * 1.5)
 		print(f"[{i + 1}/{len(data)}]")
 
 def start_running_file(data: str):
@@ -214,7 +214,7 @@ def post(path: str, body: bytes) -> HttpResponse:
 		}
 		info = [float(x) for x in body.decode("UTF-8").split("\n")]
 		dist = math.dist(info, [*motor_pos])
-		threading.Thread(target=set_motor_pos, args=(*info, dist * 7)).start()
+		threading.Thread(target=set_motor_pos, args=(*info, dist * 6.5)).start()
 		return {
 			"status": 200,
 			"headers": {},
