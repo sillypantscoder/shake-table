@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+	<!-- This is a basic program that lets you move the motors around. It will get the current motor position from the server, then send signals to move the motor whenever you click in a new position. -->
+	<style>
+text {
+	font-family: sans-serif;
+	user-select: none;
+	font-size: 2px;
+}
+.button rect {
+	fill: black;
+	rx: 0.5px;
+}
+.button text {
+	fill: white;
+	transform: translateY(1.75px);
+}
+.button:hover rect {
+	fill: white;
+	stroke: black;
+	stroke-width: 0.1px;
+}
+.button:hover text {
+	fill: black;
+}
+path.active {
+	fill: red;
+}
+	</style>
+	<rect x="0" y="0" width="20" height="20" fill="white" />
+	<g>
+		<rect x="0" y="0" width="20" height="2" fill="black" />
+		<path d="M 1 0.2 L 1.6 0.9 L 1.6 1.8 L 0.4 1.8 L 0.4 0.9 Z" fill="black" stroke-width="0.2" stroke="white" onclick="location.replace('.')" />
+		<text x="2" y="2" fill="white">Motor Control</text>
+	</g>
+	<g onmousedown="mousedown(event)" onmouseup="mouseup(event)">
+		<!-- Left/right -->
+		<g data-motor="2">
+			<!-- Left -->
+			<path data-speed="50" d="M 8 10 L 5 10 L 5 8 L 2 11 L 5 14 L 5 12 L 8 12 Z" />
+			<!-- Right -->
+			<path data-speed="-50" d="M 12 10 L 15 10 L 15 8 L 18 11 L 15 14 L 15 12 L 12 12 Z" />
+		</g>
+		<!-- Up/down -->
+		<g data-motor="1">
+			<!-- Up -->
+			<path data-speed="50" d="M 9 9 L 9 6 L 7 6 L 10 3 L 13 6 L 11 6 L 11 9 Z" />
+			<!-- Down -->
+			<path data-speed="-50" d="M 9 13 L 9 16 L 7 16 L 10 19 L 13 16 L 11 16 L 11 13 Z" />
+		</g>
+	</g>
+	<script><![CDATA[
+function mousedown(event) {
+	var motor = event.target.parentNode.dataset.motor
+	var speed = event.target.dataset.speed
+	sendcmd(motor + speed)
+	event.target.classList.add("active")
+}
+function mouseup(event) {
+	var motor = event.target.parentNode.dataset.motor
+	sendcmd(motor + "0")
+	event.target.classList.remove("active")
+}
+function sendcmd(data) {
+	var x = new XMLHttpRequest()
+	x.open("POST", "/move_motor")
+	x.send(data)
+}
+	]]></script>
+</svg>

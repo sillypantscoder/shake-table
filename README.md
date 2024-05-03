@@ -23,6 +23,7 @@ If you're a random person who wants to know how to use this thing, here are some
   - You don't have to worry about this button.
   - This screen is completely broken.
   - Do not press the "Create File" button.
+  - This button has been removed to discourage pressing.
 - The "Run File" button lets you select a file to run. 3 files come preinstalled.
   - Once you have selected the file, there is a button to run the file.
   - If you push it, the motor will follow the instructions in the file.

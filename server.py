@@ -12,6 +12,7 @@ import subprocess
 import os
 import threading
 import time
+import datetime
 
 hostName = "0.0.0.0"
 serverPort = 8080
@@ -27,10 +28,42 @@ def write_file(filename: str, content: bytes):
 	f.write(content)
 	f.close()
 
+original_time = datetime.datetime.now().timestamp()
+def getTime():
+	"""Get time in seconds since the program has started."""
+	return datetime.datetime.now().timestamp() - original_time
+
 class HttpResponse(typing.TypedDict):
 	status: int
 	headers: dict[str, str]
 	content: "str | bytes"
+
+class Point(typing.TypedDict):
+	x: float
+	y: float
+
+TRACK_SIZE: float = 400
+
+motor_pos: typing.Union[Point, None] = None
+
+motor_speeds: Point = { "x": 0, "y": 0 }
+last_motor_times: Point = { "x": getTime(), "y": getTime() }
+
+def sendCommand(motor: int, speed: int):
+	subprocess.run(["python3", "sendcmd.py", f"{motor}{speed}"])
+	# Update the motor position
+	if motor_pos == None: return
+	# - Figure out what motor to update
+	motorname: typing.Literal["x", "y"] = "y"
+	if motor == 2: motorname = "x"
+	# - Find time interval
+	timeInterval = getTime() - last_motor_times[motorname]
+	# - Update the position
+	motor_pos[motorname] += timeInterval * motor_speeds[motorname] * -1# (-1 if motorname == "x" else 1)
+	# - Update the new motor speed
+	motor_speeds[motorname] = speed
+	last_motor_times[motorname] = getTime()
+	print(motor_pos)
 
 def run_file(data: list[tuple[float, float]]):
 	"""Runs a file by moving the motors according to the data."""
@@ -65,7 +98,17 @@ def get(path: str) -> HttpResponse:
 			"headers": {
 				"Content-Type": "image/svg+xml"
 			},
-			"content": read_file("client/motors.xml")
+			"content": read_file("client/motors.xml").replace(b"{{MOTORLOC}}",
+				("null" if motor_pos == None else f"[{motor_pos['x']}, {motor_pos['y']}]").encode("UTF-8")
+			)
+		}
+	elif path == "/motors_basic":
+		return {
+			"status": 200,
+			"headers": {
+				"Content-Type": "image/svg+xml"
+			},
+			"content": read_file("client/motors_basic.xml")
 		}
 	elif path == "/run":
 		return {
@@ -115,8 +158,29 @@ def get(path: str) -> HttpResponse:
 
 def post(path: str, body: bytes) -> HttpResponse:
 	"""Return the results of a POST request."""
+	global motor_pos
 	if path == "/move_motor":
-		subprocess.run(["python3", "sendcmd.py", body.decode("UTF-8")])
+		data = body.decode("UTF-8")
+		motor = int(data[0])
+		speed = int(data[1:])
+		sendCommand(motor, speed)
+		return {
+			"status": 200,
+			"headers": {},
+			"content": f""
+		}
+	elif path == "/guess/remove":
+		motor_pos = None
+		return {
+			"status": 200,
+			"headers": {},
+			"content": f""
+		}
+	elif path == "/guess/pos":
+		data = body.decode("UTF-8").split("\n")
+		x = float(data[0])
+		y = float(data[1])
+		motor_pos = { "x": x, "y": y }
 		return {
 			"status": 200,
 			"headers": {},
