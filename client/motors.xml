@@ -78,10 +78,10 @@ function setloc(x, y) {
 	} else {
 		var h = new XMLHttpRequest()
 		h.open("POST", "/move_motor")
-		h.send("2" + Math.round(loc[1] - x))
+		h.send("2" + Math.round((loc[1] - x) / 2))
 		h = new XMLHttpRequest()
 		h.open("POST", "/move_motor")
-		h.send("1" + Math.round(loc[2] - y))
+		h.send("1" + Math.round((loc[2] - y) / 2))
 		setTimeout(() => {
 			var h = new XMLHttpRequest()
 			h.open("POST", "/move_motor")
@@ -89,7 +89,7 @@ function setloc(x, y) {
 			h = new XMLHttpRequest()
 			h.open("POST", "/move_motor")
 			h.send("20")
-		}, 1000)
+		}, 2000)
 		// Update local pos
 		loc[1] = x
 		loc[2] = y

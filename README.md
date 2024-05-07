@@ -35,8 +35,14 @@ If you're a random person who wants to know how to use this thing, here are some
     - The motor controller is connected.
     - The server is running.
     - You did Step 3 when setting up the server.
-- The "Motor Control" button lets you move the motors around.
+- The "Basic Motor Control" button lets you move the motors around.
   - You can push the four buttons to move the motors.
+  - Very simple.
+- The "Motor Control" button lets you move the motors around, but in a more advanced way.
+  - If there is no dot, click anywhere on the square to guess where the motor position is.
+  - If there is a dot, click anywhere on the square to move the motor to that spot.
+  - The "Set Center" is equivalent to clicking in the center.
+  - The "Reset Position" button removes the dot so you can re-guess.
 
 ## How it works
 

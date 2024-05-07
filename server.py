@@ -63,7 +63,7 @@ def sendCommand(motor: int, speed: int):
 	# - Update the new motor speed
 	motor_speeds[motorname] = speed
 	last_motor_times[motorname] = getTime()
-	print(motor_pos)
+	# print(motor_pos)
 
 def run_file(data: list[tuple[float, float]]):
 	"""Runs a file by moving the motors according to the data."""
@@ -72,10 +72,10 @@ def run_file(data: list[tuple[float, float]]):
 		if data[i][0] == 0:
 			time.sleep(data[i][1])
 		else:
-			subprocess.run(["python3", "sendcmd.py", f"{int(data[i][0])}{int(data[i][1])}"])
+			sendCommand(int(data[i][0]), int(data[i][1]))
 		print(f"[{i + 1}/{len(data)}]")
-	subprocess.run(["python3", "sendcmd.py", f"10"])
-	subprocess.run(["python3", "sendcmd.py", f"20"])
+	sendCommand(1, 0)
+	sendCommand(2, 0)
 
 def start_running_file(data: str):
 	"""Starts a thread that runs a specified file. Allows the server to continue handling other requests after this one has finished."""

@@ -1,34 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="background: #888;">
 	<!-- This file shows you the list of files you have saved, and lets you view and run them. -->
 	<style>
 text {
 	font-family: sans-serif;
 	user-select: none;
 }
-.button rect {
-	fill: black;
-	rx: 0.5px;
-}
-.button text {
-	fill: white;
-	font-size: 2px;
-	transform: translateY(1.75px);
-}
-.button:hover rect {
-	fill: white;
-	stroke: black;
-	stroke-width: 0.1px;
-}
-.button:hover text {
-	fill: black;
-}
 	</style>
-	<rect x="0" y="0" width="20" height="20" fill="white" />
+	<rect x="0" y="0" width="200" height="200" fill="white" />
 	<g>
-		<rect x="0" y="0" width="20" height="2" fill="black" />
-		<path d="M 1 0.2 L 1.6 0.9 L 1.6 1.8 L 0.4 1.8 L 0.4 0.9 Z" fill="black" stroke-width="0.2" stroke="white" onclick="location.replace('.')" />
-		<text x="2" y="2" font-size="2" fill="white">Select File</text>
+		<rect x="0" y="0" width="200" height="20" fill="black" />
+		<path d="M 10 2 L 16 9 L 16 18 L 4 18 L 4 9 Z" fill="black" stroke-width="2" stroke="white" onclick="location.replace('.')" />
+		<text x="20" y="20" font-size="20" fill="white">Select File</text>
 	</g>
+	<foreignObject x="0" y="20" width="200" height="180">
+		<div xmlns="http://www.w3.org/1999/xhtml" class="button-root">
+			<style><![CDATA[
+				.button-root {
+					width: 100%;
+					height: 100%;
+					font-family: sans-serif;
+					font-size: 15px;
+					user-select: none;
+					overflow-y: auto;
+					scrollbar-width: thin;
+				}
+				.button-root > div {
+					margin: 10px;
+					border-radius: 5px;
+					padding: 5px;
+					background: black;
+					color: white;
+				}
+				.button-root > div:hover {
+					outline: 2px solid black;
+					background: white;
+					color: black;
+				}
+			]]></style>
+		</div>
+	</foreignObject>
 	<script><![CDATA[
 var ns = "http://www.w3.org/2000/svg";
 (() => {
@@ -37,10 +47,9 @@ var ns = "http://www.w3.org/2000/svg";
 	x.addEventListener("loadend", (e) => {
 		var data = e.target.responseText.split("\n")
 		for (var i = 0; i < data.length; i++) {
-			var e = document.createElementNS(ns, "g")
-			e.classList.add("button")
-			e.innerHTML = `<rect x="1" y="${(i + 1) * 3}" width="18" height="2" /><text x="2" y="${(i + 1) * 3}">${data[i]}</text>`
-			document.rootElement.appendChild(e)
+			var e = document.createElementNS("http://www.w3.org/1999/xhtml", "div")
+			e.innerHTML = `${data[i]}`
+			document.querySelector(".button-root").appendChild(e)
 			e.setAttribute("onclick", `location.replace("/set/${data[i]}/")`)
 		}
 	})
