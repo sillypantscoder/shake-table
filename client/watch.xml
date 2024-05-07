@@ -43,7 +43,8 @@ text {
 var ns = "http://www.w3.org/2000/svg";
 
 var FILENAME = `{{FILENAME}}`;
-var FILE_INFO = `{{FILEINFO}}`.split("\n").map((v) => [Number(v[0]), Number(v.substr(1))]);
+var FILE_INFO = `{{FILEINFO}}`;
+FILE_INFO = FILE_INFO.split("\n").slice(FILE_INFO.indexOf("") + 1).map((v) => [Number(v[0]), Number(v.substr(1))])
 
 var tickStart = Date.now()
 var totalTimeS = 0;

@@ -1,3 +1,5 @@
+Start by moving down very quickly, then slow down to zero. Used for testing the motors.
+
 1-50
 1-49
 1-48

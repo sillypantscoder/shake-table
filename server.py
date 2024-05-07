@@ -79,7 +79,8 @@ def run_file(data: list[tuple[float, float]]):
 
 def start_running_file(data: str):
 	"""Starts a thread that runs a specified file. Allows the server to continue handling other requests after this one has finished."""
-	t: list[tuple[float, float]] = [(int(x[0]), float(x[1:]) ) for x in data.split("\n")]
+	maindata = data[data.index("\n\n") + 2:]
+	t: list[tuple[float, float]] = [(int(x[0]), float(x[1:]) ) for x in maindata.split("\n")]
 	threading.Thread(target=run_file, args=(t,)).start()
 
 def get(path: str) -> HttpResponse:

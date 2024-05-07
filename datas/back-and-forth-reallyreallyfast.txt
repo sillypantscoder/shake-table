@@ -1,3 +1,5 @@
+Move back and forth vertically as fast as the motors can switch directions.
+
 1120
 1-120
 1120

@@ -1,3 +1,5 @@
+Move back and forth horizontally at 2.5 Hz.
+
 2100
 00.2
 2-100
