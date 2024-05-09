@@ -13,6 +13,7 @@ import os
 import threading
 import time
 import datetime
+from urllib.parse import unquote
 
 hostName = "0.0.0.0"
 serverPort = 8080
@@ -83,6 +84,24 @@ def start_running_file(data: str):
 	t: list[tuple[float, float]] = [(int(x[0]), float(x[1:]) ) for x in maindata.split("\n")]
 	threading.Thread(target=run_file, args=(t,)).start()
 
+def generate_file(filename: str, frequency: float):
+	"""Generate a file with back-and-forth motion. Accessed from the 'create.xml' file."""
+	fileData = f"Move back and forth horizontally at {frequency} Hz.\n"
+	motorTime = 0.5 / frequency
+	motorSpeed = round(46 / (motorTime + 0.26))
+	motorTime = round(motorTime, 2)
+	for _ in range(round(4)):
+		fileData += f"""
+2{motorSpeed}
+0{motorTime}
+2{-motorSpeed}
+0{motorTime}"""
+	while os.path.exists("datas/" + filename + ".txt"):
+		filename += "2"
+	f = open("datas/" + filename + ".txt", "w")
+	f.write(fileData)
+	f.close()
+
 def get(path: str) -> HttpResponse:
 	"""Return the results of a GET request."""
 	if path == "/":
@@ -119,8 +138,16 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/run.xml")
 		}
+	elif path == "/create":
+		return {
+			"status": 200,
+			"headers": {
+				"Content-Type": "image/svg+xml"
+			},
+			"content": read_file("client/create.xml")
+		}
 	elif path.startswith("/set/run/"):
-		setname = path[9:-1]
+		setname = unquote(path[9:-1])
 		contents = read_file("datas/" + setname + ".txt").decode("UTF-8")
 		start_running_file(contents)
 		return {
@@ -131,7 +158,7 @@ def get(path: str) -> HttpResponse:
 			"content": read_file("client/watch.xml").decode("UTF-8").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents)
 		}
 	elif path.startswith("/set/"):
-		setname = path[5:-1]
+		setname = unquote(path[5:-1])
 		contents = read_file("datas/" + setname + ".txt")
 		return {
 			"status": 200,
@@ -182,6 +209,16 @@ def post(path: str, body: bytes) -> HttpResponse:
 		x = float(data[0])
 		y = float(data[1])
 		motor_pos = { "x": x, "y": y }
+		return {
+			"status": 200,
+			"headers": {},
+			"content": f""
+		}
+	elif path == "/create":
+		info = body.decode("UTF-8").split("\n")
+		filename = info[0]
+		frequency = float(info[1])
+		generate_file(filename, frequency)
 		return {
 			"status": 200,
 			"headers": {},
