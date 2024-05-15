@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
 	<!--
-		This file lets you monitor the motors' positions as the motors are running. It is accessed through URLs like '/set/run/<filename>/'.
-		This file DOES NOT communicate with the server at all! Instead, both the client and the server run their own seperate simulations.
+		This file lets you monitor the motors' positions as the motors are running.
+		It is accessed through URLs like '/set/run/<filename>/'.
+		This file DOES NOT communicate with the server at all!
+		Instead, both the client and the server run their own seperate simulations.
+		Update: The simulations have been removed. Let's be honest, they were terrible anyways.
+		Only the progress bar remains.
 	-->
 	<style>
 text {

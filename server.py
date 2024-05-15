@@ -3,7 +3,7 @@ Starts an HTTP server letting you move the motors in various ways.
 
 To see the client source pages, look at the "client" folder.
 
-The actual server content is handled in the "get" and "post" functions.
+The actual servery stuff is handled in the "get" and "post" functions.
 """
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -51,6 +51,7 @@ motor_speeds: Point = { "x": 0, "y": 0 }
 last_motor_times: Point = { "x": getTime(), "y": getTime() }
 
 def sendCommand(motor: int, speed: int):
+	"""Send one command to the motors. Also, update the simulated motor position."""
 	subprocess.run(["python3", "sendcmd.py", f"{motor}{speed}"])
 	# Update the motor position
 	if motor_pos == None: return
@@ -104,7 +105,7 @@ def generate_file(filename: str, frequency: float):
 
 def get(path: str) -> HttpResponse:
 	"""Return the results of a GET request."""
-	if path == "/":
+	if path == "/": # Home page
 		return {
 			"status": 200,
 			"headers": {
@@ -112,7 +113,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/home.xml")
 		}
-	elif path == "/motors":
+	elif path == "/motors": # More complex motor control page.
 		return {
 			"status": 200,
 			"headers": {
@@ -120,9 +121,9 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/motors.xml").replace(b"{{MOTORLOC}}",
 				("null" if motor_pos == None else f"[{motor_pos['x']}, {motor_pos['y']}]").encode("UTF-8")
-			)
+			) # This part sends the motor location to the page.
 		}
-	elif path == "/motors_basic":
+	elif path == "/motors_basic": # Less complex motor control page.
 		return {
 			"status": 200,
 			"headers": {
@@ -130,7 +131,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/motors_basic.xml")
 		}
-	elif path == "/run":
+	elif path == "/run": # List of files.
 		return {
 			"status": 200,
 			"headers": {
@@ -138,7 +139,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/run.xml")
 		}
-	elif path == "/create":
+	elif path == "/create": # Create a file page.
 		return {
 			"status": 200,
 			"headers": {
@@ -146,7 +147,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/create.xml")
 		}
-	elif path.startswith("/set/run/"):
+	elif path.startswith("/set/run/"): # Start running a file.
 		setname = unquote(path[9:-1])
 		contents = read_file("datas/" + setname + ".txt").decode("UTF-8")
 		start_running_file(contents)
@@ -157,7 +158,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/watch.xml").decode("UTF-8").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents)
 		}
-	elif path.startswith("/set/"):
+	elif path.startswith("/set/"): # View a file's info.
 		setname = unquote(path[5:-1])
 		contents = read_file("datas/" + setname + ".txt")
 		return {
@@ -167,7 +168,7 @@ def get(path: str) -> HttpResponse:
 			},
 			"content": read_file("client/view.xml").decode("UTF-8").replace("{{FILENAME}}", setname).replace("{{FILEINFO}}", contents.decode("UTF-8"))
 		}
-	elif path == "/data/ls":
+	elif path == "/data/ls": # Get the list of files.
 		return {
 			"status": 200,
 			"headers": {
@@ -187,7 +188,9 @@ def get(path: str) -> HttpResponse:
 def post(path: str, body: bytes) -> HttpResponse:
 	"""Return the results of a POST request."""
 	global motor_pos
-	if path == "/move_motor":
+	if path == "/move_motor": # Send one command to the motor.
+		# The request's body should contain the command to send,
+		# in the same format as `terminal.py`.
 		data = body.decode("UTF-8")
 		motor = int(data[0])
 		speed = int(data[1:])
@@ -197,14 +200,14 @@ def post(path: str, body: bytes) -> HttpResponse:
 			"headers": {},
 			"content": f""
 		}
-	elif path == "/guess/remove":
+	elif path == "/guess/remove": # Remove the motor's position.
 		motor_pos = None
 		return {
 			"status": 200,
 			"headers": {},
 			"content": f""
 		}
-	elif path == "/guess/pos":
+	elif path == "/guess/pos": # Guess the motor's position.
 		data = body.decode("UTF-8").split("\n")
 		x = float(data[0])
 		y = float(data[1])
@@ -214,17 +217,18 @@ def post(path: str, body: bytes) -> HttpResponse:
 			"headers": {},
 			"content": f""
 		}
-	elif path == "/create":
+	elif path == "/create": # Create a file with a specific frequency.
 		info = body.decode("UTF-8").split("\n")
 		filename = info[0]
 		frequency = float(info[1])
 		generate_file(filename, frequency)
+		# The actual file creation takes place in the `generate_file` function.
 		return {
 			"status": 200,
 			"headers": {},
 			"content": f""
 		}
-	else:
+	else: # 404 POST
 		return {
 			"status": 404,
 			"headers": {
@@ -255,7 +259,7 @@ class MyServer(BaseHTTPRequestHandler):
 		if isinstance(c, str): c = c.encode("utf-8")
 		self.wfile.write(c)
 	def log_message(self, format: str, *args: typing.Any) -> None:
-		return;
+		return; # Get rid of the server log messages
 		if 400 <= int(args[1]) < 500:
 			# Errored request!
 			print(u"\u001b[31m", end="")

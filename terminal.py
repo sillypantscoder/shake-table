@@ -1,5 +1,6 @@
 """
-A simple terminal interface that lets you manually type in the command line argument.
+A simple terminal interface that lets you manually type in
+the command line argument to `sendcmd.py`.
 """
 
 import subprocess

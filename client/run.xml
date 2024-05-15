@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="background: #888;">
-	<!-- This file shows you the list of files you have saved, and lets you view and run them. -->
+	<!--
+		This file shows you the list of files you have saved, and lets you view and run them.
+		The actual list is made using embedded XHTML, because that means I can
+		avoid making a scrolling box myself and let the browser do it instead.
+	-->
 	<style>
 text {
 	font-family: sans-serif;

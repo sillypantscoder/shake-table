@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
-	<!-- This is a basic program that lets you move the motors around. It will get the current motor position from the server, then send signals to move the motor whenever you click in a new position. -->
+	<!--
+		This is a very basic program that lets you move the motors around.
+		Clicking and releasing on the four buttons will send signals to start and stop the motors.
+	-->
 	<style>
 text {
 	font-family: sans-serif;

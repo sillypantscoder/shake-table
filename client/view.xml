@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" style="background: #888;">
-	<!-- This file shows you a preview of a file, and has a button to run the file. -->
+	<!--
+		This file shows you a preview of a file, and has a button to run the file.
+		It also shows you the file description, which is also done as embedded XHTML.
+		If you're trying to figure out how the file format works by reverse engineering
+		the code, this file is probably your best bet.
+	-->
 	<style>
 text {
 	font-family: sans-serif;
