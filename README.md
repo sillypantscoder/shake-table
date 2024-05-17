@@ -13,7 +13,7 @@ If you're a random person who wants to know how to use this thing, here are some
 	3. Run `sudo chmod ugo+rwx /dev/ttyS0`
 	   - This will allow the server to access the motor controller.
 	   - It may ask for administrator permissions.
-     - This is a very important step.
+       - This is a very important step.
 	4. Run `python3 server.py`
 	5. Good News: the server has started.
   - If you press Ctrl-C, close the terminal window, or restart your computer or something, the server will stop.
@@ -45,6 +45,16 @@ If you're a random person who wants to know how to use this thing, here are some
   - If there is a dot, click anywhere on the square to move the motor to that spot.
   - The "Set Center" is equivalent to clicking in the center.
   - The "Reset Position" button removes the dot so you can re-guess.
+
+## Videos
+
+Starting the server and running a file:
+
+<video controls src="docs/motors-demo.mp4"></video>
+
+Demonstration of the "create a file" screen:
+
+<video controls src="docs/create-screen-demo.mp4"></video>
 
 ## How it works
 
