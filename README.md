@@ -48,13 +48,9 @@ If you're a random person who wants to know how to use this thing, here are some
 
 ## Videos
 
-Starting the server and running a file:
+Videos are now on Google Drive because GitHub is stupid.
 
-<video controls src="docs/motors-demo.mp4"></video>
-
-Demonstration of the "create a file" screen:
-
-<video controls src="docs/create-screen-demo.mp4"></video>
+https://drive.google.com/drive/folders/1cWJOCm9tMHwIIL_9FlGmUJaAWaEscZN1?usp=sharing
 
 ## How it works
 
